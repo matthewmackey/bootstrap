@@ -9,9 +9,9 @@ GPG_KEY_TYPE=RSA
 GPG_KEY_LENGTH=4096
 GPG_NAME="Matthew Machaj"
 GPG_EMAIL="matthew.mackey.dev@gmail.com"
-GPG_COMMENT="<COMPUTER_NAME>"
 
 # pass
+PASS_DIR=~/.password-store
 PASS_DEFAULT_SSH_PASSPHRASE_PATH="ssh/default"
 
 # ssh
@@ -62,6 +62,18 @@ skip_if_exists() {
   fi
 }
 
+set_local_git_config() {
+  local _name=$1
+  local _email=$1
+
+  print_msg "Setting local git config name [$_name]"
+  git config --local user.name "$_name"
+
+  print_msg "Setting local git config email [$_email]"
+  git config --local user.email "$_email"
+}
+
+
 #-------------------------------------------------------------------------------
 # Steps:
 #-------------------------------------------------------------------------------
@@ -88,7 +100,7 @@ install_packages() {
 generate_gpg_key() {
   print_step "Generate GPG key for [$GPG_EMAIL]"
 
-  if gpg --list-keys $GPG_EMAIL >/dev/null; then
+  if gpg --list-keys $GPG_EMAIL >& /dev/null; then
     printf "GPG key already exists for [$GPG_EMAIL]...skipping step\n"
     return 0
   fi
@@ -110,10 +122,21 @@ initialize_pass_repo() {
   print_step "Initialize 'pass' repository"
 
   _skip_msg="'pass' repository has already been initialized"
-  skip_if_exists ~/.password-store "$_skip_msg" || return 0
+  skip_if_exists $PASS_DIR "$_skip_msg" || return 0
 
   pass init "$GPG_EMAIL"
+
+  print_msg "Setting --global git config name [$GITHUB_NAME] in order to run 'pass git init'"
+  git config --global user.name "$GITHUB_NAME"
+
+  print_msg "Setting --global git config email [$GITHUB_EMAIL] in order to run 'pass git init'"
+  git config --global user.email "$GITHUB_EMAIL"
+
+  print_msg "Initializing 'pass' git repository\n"
   pass git init
+
+  cd $PASS_DIR
+  set_local_git_config $GITHUB_NAME $GITHUB_EMAIL
 }
 
 gather_and_store_ssh_key_passphrase() {
@@ -178,6 +201,7 @@ gather_computer_id
 COMPUTER_NAME="Lenovo laptop"
 gather_computer_name
 
+GPG_COMMENT="$COMPUTER_NAME"
 generate_gpg_key
 
 initialize_pass_repo
