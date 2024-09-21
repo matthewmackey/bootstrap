@@ -24,18 +24,34 @@ TMP_BOOTSTRAP_DIR=/tmp/bootstrap
 export PERSONAL_DIR=$PERSONAL
 ANSIBLE_ROOT=$PERSONAL_DIR/config-mgmt
 
+echo "#--------------------------------------------------------------------------------------"
+echo "# Installing 'git' and cloning 'bootstrap' repo"
+echo "#--------------------------------------------------------------------------------------"
+echo
 sudo apt install -y git
 
 # Clone bootstrap repository
 git clone https://github.com/matthewmackey/bootstrap.git $TMP_BOOTSTRAP_DIR
 cd $TMP_BOOTSTRAP_DIR
 
+echo "#--------------------------------------------------------------------------------------"
+echo "# Running: [bootstrap-pass-ssh-repos.sh]"
+echo "#--------------------------------------------------------------------------------------"
+echo
 # Run script to clone and setup pass, SSH key and other repos needed for bootstrapping
 ./bootstrap-pass-ssh-repos.sh
 
+echo "#--------------------------------------------------------------------------------------"
+echo "# Running: [bootstrap-asdf.sh]"
+echo "#--------------------------------------------------------------------------------------"
+echo
 # Setup ASDF so we can install Python and pip to install Ansible
 ./bootstrap-asdf.sh
 
+echo "#--------------------------------------------------------------------------------------"
+echo "# Running: [bootstrap-ansible.sh]"
+echo "#--------------------------------------------------------------------------------------"
+echo
 # Install Ansible via pipx
 ./bootstrap-ansible.sh
 
