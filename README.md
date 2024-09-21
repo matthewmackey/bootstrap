@@ -1,9 +1,7 @@
 # Bootstrap Instructions
 
 ```
-test ! -d ~/.personal && mkdir ~/.personal
-cd ~/.personal
-git clone https://github.com/matthewmachaj/bootstrap.git
-cd bootstrap
+curl https://raw.githubusercontent.com/matthewmackey/bootstrap/main/bootstrap.sh > bootstrap.sh
+chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
