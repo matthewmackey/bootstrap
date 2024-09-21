@@ -173,8 +173,13 @@ gather_and_store_ssh_key_passphrase() {
 generate_and_store_ssh_key_passphrase() {
   print_step "Generate random passphrase for default SSH key & insert into 'pass' repo"
 
-  pass generate --no-symbols --clip "$PASS_DEFAULT_SSH_PASSPHRASE_PATH" $SSH_PASSPHRASE_LENGTH
-  printf "A random passphrase was stored in your 'pass' repo at the key: [$PASS_DEFAULT_SSH_PASSPHRASE_PATH]"
+  pass generate --no-symbols "$PASS_DEFAULT_SSH_PASSPHRASE_PATH" $SSH_PASSPHRASE_LENGTH > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    msg "A random passphrase was stored in your 'pass' repo at the key: [$PASS_DEFAULT_SSH_PASSPHRASE_PATH]"
+  else
+    fail "Error generating random passphrase for SSH key with 'pass'"
+    exit 1
+  fi
 }
 
 generate_ssh_key() {
