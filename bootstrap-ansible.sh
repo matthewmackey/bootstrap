@@ -5,6 +5,17 @@ set -o pipefail
 
 
 #------------------------------------------------------------------------------
+# DEPENDENCIES
+#------------------------------------------------------------------------------
+ENV_COMMON_URL="https://raw.githubusercontent.com/matthewmackey/dotfiles/refs/heads/main/.config/sh/env"
+LIB_COMMON_URL="https://raw.githubusercontent.com/matthewmackey/dotfiles/refs/heads/main/lib/common.sh"
+
+# See: https://stackoverflow.com/questions/5735666/execute-bash-script-from-url
+source <(curl -s $ENV_COMMON_URL)
+source <(curl -s $LIB_COMMON_URL)
+
+
+#------------------------------------------------------------------------------
 # CONSTANTS
 #------------------------------------------------------------------------------
 DEFAULT_PYTHON_VERSION=3.8.9

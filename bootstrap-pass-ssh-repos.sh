@@ -5,6 +5,20 @@ set -e
 set -o pipefail
 
 
+#------------------------------------------------------------------------------
+# DEPENDENCIES
+#------------------------------------------------------------------------------
+ENV_COMMON_URL="https://raw.githubusercontent.com/matthewmackey/dotfiles/refs/heads/main/.config/sh/env"
+LIB_COMMON_URL="https://raw.githubusercontent.com/matthewmackey/dotfiles/refs/heads/main/lib/common.sh"
+
+# See: https://stackoverflow.com/questions/5735666/execute-bash-script-from-url
+source <(curl -s $ENV_COMMON_URL)
+source <(curl -s $LIB_COMMON_URL)
+
+
+#------------------------------------------------------------------------------
+# CONSTANTS
+#------------------------------------------------------------------------------
 # gpg
 GPG_KEY_TYPE=RSA
 GPG_KEY_LENGTH=4096
@@ -42,17 +56,6 @@ PERSONAL_CONFIG_MGMT_REPO=$GITHUB_BASE_REPO/config-mgmt.git
 #-------------------------------------------------------------------------------
 # Helper methods
 #-------------------------------------------------------------------------------
-print_step() {
-  printf "\n"
-  printf "#-------------------------------------------------------------------------------\n"
-  printf "# $1\n"
-  printf "#-------------------------------------------------------------------------------\n"
-}
-
-print_msg() {
-  printf "\n $1\n"
-}
-
 skip_if_exists() {
   local _file_to_test_if_exists=$1
   local _skip_msg=$2
@@ -70,10 +73,10 @@ set_local_git_config() {
   local _name="$1"
   local _email="$2"
 
-  print_msg "Setting local git config user.name: [$_name]"
+  msg "Setting local git config user.name: [$_name]"
   git config --local user.name "$_name"
 
-  print_msg "Setting local git config user.email: [$_email]"
+  msg "Setting local git config user.email: [$_email]"
   git config --local user.email "$_email"
 }
 
@@ -135,10 +138,10 @@ EOF
 set_global_gitconfig_user_name_and_email() {
   print_step "Configure global git config w/ 'user.name' and 'user.email'"
 
-  print_msg "Setting global git config user.name: [$GITHUB_NAME]"
+  msg "Setting global git config user.name: [$GITHUB_NAME]"
   git config --global user.name "$GITHUB_NAME"
 
-  print_msg "Setting global git config user.email: [$GITHUB_EMAIL]"
+  msg "Setting global git config user.email: [$GITHUB_EMAIL]"
   git config --global user.email "$GITHUB_EMAIL"
 }
 
@@ -150,7 +153,7 @@ initialize_pass_repo() {
 
   pass init "$GPG_EMAIL"
 
-  print_msg "Initializing 'pass' git repository\n"
+  msg "Initializing 'pass' git repository\n"
   pass git init
 
   cd $PASS_DIR
@@ -194,9 +197,9 @@ ensure_personal_dir_exists() {
 
   if [ ! -d "$PERSONAL_DIR" ]; then
     mkdir "$PERSONAL_DIR"
-    print_msg "PERSONAL_DIR created"
+    msg "PERSONAL_DIR created"
   else
-    print_msg "PERSONAL_DIR already existed"
+    msg "PERSONAL_DIR already existed"
   fi
 }
 

@@ -24,34 +24,36 @@ TMP_BOOTSTRAP_DIR=/tmp/bootstrap
 export PERSONAL_DIR=$PERSONAL
 ANSIBLE_ROOT=$PERSONAL_DIR/config-mgmt
 
-echo "#--------------------------------------------------------------------------------------"
-echo "# Installing 'git' and cloning 'bootstrap' repo"
-echo "#--------------------------------------------------------------------------------------"
-echo
+#--------------------------------------------------------------------------------------"
+#
+#--------------------------------------------------------------------------------------"
+section "Install 'git' and clone 'bootstrap' repo"
+print_step "Ensuring git is installed"
 sudo apt install -y git
 
 # Clone bootstrap repository
+print_step "Cloning bootstrap repo"
 git clone https://github.com/matthewmackey/bootstrap.git $TMP_BOOTSTRAP_DIR
 cd $TMP_BOOTSTRAP_DIR
 
-echo "#--------------------------------------------------------------------------------------"
-echo "# Running: [bootstrap-pass-ssh-repos.sh]"
-echo "#--------------------------------------------------------------------------------------"
-echo
+#--------------------------------------------------------------------------------------"
+#
+#--------------------------------------------------------------------------------------"
+section "Running: [bootstrap-pass-ssh-repos.sh]"
 # Run script to clone and setup pass, SSH key and other repos needed for bootstrapping
 ./bootstrap-pass-ssh-repos.sh
 
-echo "#--------------------------------------------------------------------------------------"
-echo "# Running: [bootstrap-asdf.sh]"
-echo "#--------------------------------------------------------------------------------------"
-echo
+#--------------------------------------------------------------------------------------"
+#
+#--------------------------------------------------------------------------------------"
+section "Running: [bootstrap-asdf.sh]"
 # Setup ASDF so we can install Python and pip to install Ansible
 ./bootstrap-asdf.sh
 
-echo "#--------------------------------------------------------------------------------------"
-echo "# Running: [bootstrap-ansible.sh]"
-echo "#--------------------------------------------------------------------------------------"
-echo
+#--------------------------------------------------------------------------------------"
+#
+#--------------------------------------------------------------------------------------"
+section "Running: [bootstrap-ansible.sh]"
 # Install Ansible via pipx
 ./bootstrap-ansible.sh
 
