@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 set -e
 set -o pipefail
 
@@ -17,6 +18,7 @@ PASS_DEFAULT_SSH_PASSPHRASE_PATH="ssh/default"
 # ssh
 SSH_KEY_TYPE=rsa
 SSH_KEY_LENGTH=4096
+SSH_PASSPRHASE_LENGTH=20
 DEFAULT_SSH_KEY_FILE=~/.ssh/id_rsa
 
 # github
@@ -65,13 +67,13 @@ skip_if_exists() {
 }
 
 set_local_git_config() {
-  local _name=$1
-  local _email=$1
+  local _name="$1"
+  local _email="$2"
 
-  print_msg "Setting local git config name [$_name]"
+  print_msg "Setting local git config user.name: [$_name]"
   git config --local user.name "$_name"
 
-  print_msg "Setting local git config email [$_email]"
+  print_msg "Setting local git config user.email: [$_email]"
   git config --local user.email "$_email"
 }
 
@@ -95,7 +97,14 @@ gather_computer_name_for_gpg_key_info() {
 
 install_packages() {
   print_step "Install required packages"
-  sudo apt-get update
+
+  if [ -z "$(find /var/cache/apt/pkgcache.bin -mmin -60)" ]; then
+    sudo apt-get update
+  else
+    skipping "APT cache was updated within last 60 minutes"
+  fi
+
+  print_step "Installing gpg | git | pass"
   sudo apt-get install -y gpg git pass
 }
 
@@ -120,6 +129,19 @@ Expire-Date: 0
 EOF
 }
 
+# We need to set this globally before running `pass git init` b/c the .git
+# folder inside of the PASS_DIR will not exist until after `pass git init`
+# is run so we couldn't set them using the `git config --local` option
+set_global_gitconfig_user_name_and_email() {
+  print_step "Configure global git config w/ 'user.name' and 'user.email'"
+
+  print_msg "Setting global git config user.name: [$GITHUB_NAME]"
+  git config --global user.name "$GITHUB_NAME"
+
+  print_msg "Setting global git config user.email: [$GITHUB_EMAIL]"
+  git config --global user.email "$GITHUB_EMAIL"
+}
+
 initialize_pass_repo() {
   print_step "Initialize 'pass' repository"
 
@@ -128,17 +150,11 @@ initialize_pass_repo() {
 
   pass init "$GPG_EMAIL"
 
-  print_msg "Setting --global git config name [$GITHUB_NAME] in order to run 'pass git init'"
-  git config --global user.name "$GITHUB_NAME"
-
-  print_msg "Setting --global git config email [$GITHUB_EMAIL] in order to run 'pass git init'"
-  git config --global user.email "$GITHUB_EMAIL"
-
   print_msg "Initializing 'pass' git repository\n"
   pass git init
 
   cd $PASS_DIR
-  set_local_git_config $GITHUB_NAME $GITHUB_EMAIL
+  set_local_git_config "$GITHUB_NAME" "$GITHUB_EMAIL"
 }
 
 gather_and_store_ssh_key_passphrase() {
@@ -149,6 +165,13 @@ gather_and_store_ssh_key_passphrase() {
   read -p "Hit ENTER to continue "
   printf "\n"
   pass insert "$PASS_DEFAULT_SSH_PASSPHRASE_PATH"
+}
+
+generate_and_store_ssh_key_passphrase() {
+  print_step "Generate random passphrase for default SSH key & insert into 'pass' repo"
+
+  pass generate --no-symbols --clip "$PASS_DEFAULT_SSH_PASSPHRASE_PATH" $SSH_PASSPHRASE_LENGTH
+  printf "A random passphrase was stored in your 'pass' repo at the key: [$PASS_DEFAULT_SSH_PASSPHRASE_PATH]"
 }
 
 generate_ssh_key() {
@@ -194,13 +217,10 @@ clone_if_not_exist() {
   skip_if_exists $_clone_dir || return 0
 
   git clone $_clone_url $_clone_dir
-  cd $_clone_dir
-
-  print_msg "Setting local git config name [$GITHUB_NAME]"
-  git config --local user.name "$GITHUB_NAME"
-
-  print_msg "Setting local git config email [$GITHUB_EMAIL]"
-  git config --local user.email "$GITHUB_EMAIL"
+  (
+    cd $_clone_dir
+    set_local_git_config "$GITHUB_NAME" "$GITHUB_EMAIL"
+  )
 }
 
 
@@ -218,10 +238,12 @@ gather_computer_name_for_gpg_key_info
 GPG_COMMENT="$COMPUTER_NAME"
 generate_gpg_key
 
+set_global_gitconfig_user_name_and_email
 initialize_pass_repo
 
 SSH_COMMENT="$USER-$COMPUTER_ID"
-gather_and_store_ssh_key_passphrase
+# gather_and_store_ssh_key_passphrase
+generate_and_store_ssh_key_passphrase
 generate_ssh_key
 
 ensure_personal_dir_exists
