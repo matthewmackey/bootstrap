@@ -87,15 +87,23 @@ set_local_git_config() {
 gather_computer_id_for_ssh_key_comment() {
   print_step "Gather Computer ID"
 
-  _prompt="What do you want to use as the ID for this computer (ie - $COMPUTER_ID)? "
-  read -p "$_prompt" COMPUTER_ID
+  if [ -z "$COMPUTER_ID" ]; then
+    _prompt="What do you want to use as the ID for this computer (ie - $COMPUTER_ID)? "
+    read -p "$_prompt" COMPUTER_ID
+  else
+    skipping "COMPUTER_ID already exists in the environment so using that value: [$COMPUTER_ID]"
+  fi
 }
 
 gather_computer_name_for_gpg_key_info() {
   print_step "Gather Computer Name"
 
-  _prompt="What do you want to use as the name for this computer (ie - '$COMPUTER_NAME')? "
-  read -p "$_prompt" COMPUTER_NAME
+  if [ -z "$COMPUTER_NAME" ]; then
+    _prompt="What do you want to use as the name for this computer (ie - '$COMPUTER_NAME')? "
+    read -p "$_prompt" COMPUTER_NAME
+  else
+    skipping "COMPUTER_NAME already exists in the environment so using that value: [$COMPUTER_NAME]"
+  fi
 }
 
 install_packages() {
@@ -237,10 +245,7 @@ clone_if_not_exist() {
 #-------------------------------------------------------------------------------
 install_packages
 
-COMPUTER_ID="mmlenovo"
 gather_computer_id_for_ssh_key_comment
-
-COMPUTER_NAME="Lenovo laptop"
 gather_computer_name_for_gpg_key_info
 
 GPG_COMMENT="$COMPUTER_NAME"
