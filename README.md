@@ -9,7 +9,7 @@ Run the following commands to bootstrap a new system:
 ```sh
 curl -o bootstrap.sh https://raw.githubusercontent.com/matthewmackey/bootstrap/main/bootstrap.sh
 chmod +x bootstrap.sh
-./bootstrap.sh
+./bootstrap.sh && rm ./bootstrap.sh
  ```
 
 
