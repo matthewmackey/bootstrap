@@ -3,6 +3,10 @@
 set -e
 set -o pipefail
 
+if [ "$BOOTSTRAP_DEBUG" = "y" ]; then
+  set -x
+fi
+
 
 #------------------------------------------------------------------------------
 # DEPENDENCIES
