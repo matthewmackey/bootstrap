@@ -163,9 +163,10 @@ setup_direnv_plugin() {
 
   if [ ! -e $DIRENV_ASDF_INTEGRATION_SCRIPT ]; then
     # Install direnv, set version installed as global version (add to ~/.tool-versions), and setup plugin
-    asdf direnv setup --shell $SHELL --version $DIRENV_VERSION && \
-    asdf global direnv $DIRENV_VERSION || \
-    echo "[ERROR] setting up direnv plugin"
+    asdf direnv setup --no-touch-rc-file --shell bash --version $DIRENV_VERSION && \
+      asdf direnv setup --no-touch-rc-file --shell zsh --version $DIRENV_VERSION && \
+      asdf global direnv $DIRENV_VERSION || \
+      echo "[ERROR] setting up direnv plugin"
   else
     skipping "asdf [direnv] plugin is already setup"
   fi
