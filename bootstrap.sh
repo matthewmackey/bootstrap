@@ -51,8 +51,15 @@ section "Running: [bootstrap-pass-ssh-repos.sh]"
 #
 #--------------------------------------------------------------------------------------"
 section "Running: [bootstrap-asdf.sh]"
-# Setup ASDF so we can install Python and pip to install Ansible
+# Setup ASDF so we can install Python
 ./bootstrap-asdf.sh
+
+#--------------------------------------------------------------------------------------"
+#
+#--------------------------------------------------------------------------------------"
+section "Running: [bootstrap-python.sh]"
+# Setup an ASDF Python install and install pipx there
+./bootstrap-python.sh
 
 #--------------------------------------------------------------------------------------"
 #
