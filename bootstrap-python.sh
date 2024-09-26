@@ -48,12 +48,12 @@ install_default_python_with_asdf() {
 
 install_virtualenvwrapper_into_asdf_default_python() {
   print_step "Installing 'virtualenvwrapper' into ASDF_DEFAULT_PYTHON"
-  $DEFAULT_ASDF_PYTHON_PIP install virtualenvwrapper
+  $DEFAULT_ASDF_PIP install virtualenvwrapper
 }
 
 install_pipx_into_asdf_default_python() {
   print_step "Installing 'pipx' into ASDF_DEFAULT_PYTHON"
-  $DEFAULT_ASDF_PYTHON_PIP install pipx
+  $DEFAULT_ASDF_PIP install pipx
 }
 
 # REFERENCE of older "DEFAULT_PYTHON" method:

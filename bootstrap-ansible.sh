@@ -30,7 +30,7 @@ source <(curl -s $LIB_COMMON_URL)
 #------------------------------------------------------------------------------
 install_ansible_with_pipx() {
   print_step "Installing Ansible with pipx"
-  $DEFAULT_ASDF_PIPX_BIN install --include-deps ansible
+  $DEFAULT_ASDF_PIPX install --include-deps ansible
 }
 
 
